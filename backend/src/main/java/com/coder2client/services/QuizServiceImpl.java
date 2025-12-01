@@ -4,6 +4,8 @@ import com.coder2client.dtos.CreateQuizRequest;
 import com.coder2client.dtos.QuizDto;
 import com.coder2client.entities.Quiz;
 import com.coder2client.entities.User;
+import com.coder2client.exceptions.BadRequestException;
+import com.coder2client.exceptions.ResourceNotFoundException;
 import com.coder2client.mappers.QuizMapper;
 import com.coder2client.repositories.QuizRepository;
 import com.coder2client.repositories.UserRepository;
@@ -13,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +27,17 @@ public class QuizServiceImpl implements QuizService {
     @Transactional
     public QuizDto createQuiz(CreateQuizRequest request, Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+
+        // Validate that at least one option is correct per question
+        request.getQuestions().forEach(question -> {
+            boolean hasCorrectAnswer = question.getOptions().stream()
+                    .anyMatch(option -> Boolean.TRUE.equals(option.getIsCorrect()));
+
+            if (!hasCorrectAnswer) {
+                throw new BadRequestException("Each question must have at least one correct answer");
+            }
+        });
 
         Quiz quiz = quizMapper.toEntity(request, user);
         Quiz saved = quizRepository.save(quiz);
@@ -34,17 +45,17 @@ public class QuizServiceImpl implements QuizService {
         return quizMapper.toDTO(saved, true);
     }
 
+    @Transactional
     public List<QuizDto> getAllQuizzes() {
         return quizRepository.findAll().stream()
                 .map(q -> quizMapper.toDTO(q, false))
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public QuizDto getQuizById(Long id, boolean includeAnswers) {
         Quiz quiz = quizRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Quiz not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Quiz not found with id: " + id));
         return quizMapper.toDTO(quiz, includeAnswers);
     }
-
-
 }
