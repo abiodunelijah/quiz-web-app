@@ -6,6 +6,7 @@ import com.coder2client.services.AttemptService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public class AttemptController {
     private final AttemptService attemptService;
 
     @PostMapping("/quizzes/{quizId}/attempt")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<AttemptDto> startAttempt(
             @PathVariable Long quizId,
             @RequestHeader("User-Id") Long userId) {
@@ -26,6 +28,7 @@ public class AttemptController {
     }
 
     @PostMapping("/attempts/{attemptId}/submit")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<AttemptDto> submitAttempt(
             @PathVariable Long attemptId,
             @RequestBody SubmitRequest request) {
@@ -34,12 +37,14 @@ public class AttemptController {
     }
 
     @GetMapping("/attempts/{attemptId}/result")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<AttemptDto> getAttemptResult(@PathVariable Long attemptId) {
         AttemptDto result = attemptService.getAttemptResult(attemptId);
         return ResponseEntity.ok(result);
     }
 
     @GetMapping("/users/{userId}/attempts")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<AttemptDto>> getUserAttempts(@PathVariable Long userId) {
         List<AttemptDto> attempts = attemptService.getUserAttempts(userId);
         return ResponseEntity.ok(attempts);

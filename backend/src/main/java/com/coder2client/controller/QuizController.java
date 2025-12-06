@@ -7,6 +7,7 @@ import com.coder2client.services.QuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class QuizController {
     private final QuizService quizService;
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<QuizDto> createQuiz(
             @RequestBody CreateQuizRequest request,
             @RequestHeader("User-Id") Long userId) {
