@@ -87,20 +87,18 @@
             <version>0.13.0</version>
         </dependency>
 
-        <!-- JJWT implementation (runtime) -->
+        <!-- JJWT implementation -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-impl</artifactId>
             <version>0.13.0</version>
-            <scope>runtime</scope>
         </dependency>
 
-        <!-- JJWT jackson serializer (runtime) -->
+        <!-- JJWT jackson serializer -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-jackson</artifactId>
             <version>0.13.0</version>
-            <scope>runtime</scope>
         </dependency>
 
         <dependency>
